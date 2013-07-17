@@ -63,7 +63,7 @@ if (!isset($_GET['hit']) && !isset($_GET['stand'])) {
     } /**Victory conditions are met; print final screen**/
     else{
 
-      echo 'Your final score was:' . $_SESSION['uHandValue'] . '<br /> Your opponents final score was: ' $
+      echo 'Your final score was:' . $_SESSION['uHandValue'] . '<br /> Your opponents final score was: 
             <form style=\'text-align:center\' action=\'index.php\' method=\'get\'>
             <input type=\'submit\' name=\'again\' value=\'Play Again\'/></form>';
     } ?>
