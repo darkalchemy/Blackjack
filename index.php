@@ -3,6 +3,8 @@ error_reporting(E_ALL);
 ini_set("display_errors", 1);
 require "Deck.php";
 require "Functions.php";
+
+$gameOver = 0;
 /**clear all session variables if user plays again**/
 if (isset($_GET['again'])) {
 
@@ -25,14 +27,15 @@ if (!isset($_GET['hit']) && !isset($_GET['stand'])) {
 } else if (isset($_GET['hit'])) {
     $_SESSION['userHand'][sizeof($_SESSION['userHand'])] = $_SESSION['deck']->Deal();
     $_SESSION['userValue'] = handValue($_SESSION['userHand']);
+	$_SESSION['dHandValue'] = handValue($_SESSION['dealerHand']);
+	$_SESSION['uHandValue'] = handValue($_SESSION['userHand']);
     $gameOver = winCheck($_SESSION['userValue'], $_SESSION['dHandValue'], 0);
 } else if (isset($_GET['stand'])) {
     while ($_SESSION['dHandValue'] < 17) {
         $_SESSION['dealerHand'][sizeof($_SESSION['dealerHand'])] = $_SESSION['deck']->Deal();
         $_SESSION['dHandValue'] = handValue($_SESSION['dealerHand']);
-        $gameOver = winCheck($_SESSION['userValue'], $_SESSION['dHandValue'], 1);
-
-
+		$_SESSION['uHandValue'] = handValue($_SESSION['userHand']);
+        $gameOver = winCheck($_SESSION['uHandValue'], $_SESSION['dHandValue'], 1);
     }
 }
 
@@ -63,7 +66,7 @@ if (!isset($_GET['hit']) && !isset($_GET['stand'])) {
     } /**Victory conditions are met; print final screen**/
     else{
 
-      echo 'Your final score was:' . $_SESSION['uHandValue'] . '<br /> Your opponents final score was: 
+      echo 'Your final score was:' . $_SESSION['uHandValue'] . '<br /> Your opponents final score was: '.$_SESSION['dHandValue'].'
             <form style=\'text-align:center\' action=\'index.php\' method=\'get\'>
             <input type=\'submit\' name=\'again\' value=\'Play Again\'/></form>';
     } ?>
