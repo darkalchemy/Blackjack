@@ -3,61 +3,81 @@ error_reporting(E_ALL);
 ini_set("display_errors", 1);
 require "Deck.php";
 require "Functions.php";
+require_once("class.Game.php");
 
+// Establish defaults
 $gameOver = 0;
+// Create a new deck and start a new game
+$game = new Game();
+
 /**clear all session variables if user plays again**/
 if (isset($_GET['again'])) {
 
 }
 session_start();
 if (!isset($_GET['hit']) && !isset($_GET['stand'])) {
-    $gameOver = 0;
-    $_SESSION['deck'] = new Deck();
-    shuffle($_SESSION['deck']->m_deck);
-
     /**initial deal**/
-    $userHand[0] = $_SESSION['deck']->Deal();
-    $dealerHand[0] = $_SESSION['deck']->Deal();
-    $userHand[1] = $_SESSION['deck']->Deal();
-    $dealerHand[1] = $_SESSION['deck']->Deal();
-    // var_dump($_SESSION['deck']);
+    $userHand[0] = $game->dealCard(); //$_SESSION['deck']->Deal();
+    $dealerHand[0] = $game->dealCard(); //$_SESSION['deck']->Deal();
+    $userHand[1] = $game->dealCard(); //$_SESSION['deck']->Deal();
+    $dealerHand[1] = $game->dealCard(); //$_SESSION['deck']->Deal();
     $_SESSION['userHand'] = $userHand;
     $_SESSION['dealerHand'] = $dealerHand;
-    $_SESSION['dHandValue'] = handValue($_SESSION['dealerHand']);
+	$_SESSION['dHandValue'] = $game->getHandValue($_SESSION['dealerHand']);
 } else if (isset($_GET['hit'])) {
-    $_SESSION['userHand'][sizeof($_SESSION['userHand'])] = $_SESSION['deck']->Deal();
-    $_SESSION['userValue'] = handValue($_SESSION['userHand']);
-	$_SESSION['dHandValue'] = handValue($_SESSION['dealerHand']);
-	$_SESSION['uHandValue'] = handValue($_SESSION['userHand']);
-    $gameOver = winCheck($_SESSION['userValue'], $_SESSION['dHandValue'], 0);
+    $_SESSION['userHand'][sizeof($_SESSION['userHand'])] = $game->dealCard();
+    $_SESSION['userValue'] = $game->getHandValue($_SESSION['userHand']);
+	$_SESSION['dHandValue'] = $game->getHandValue($_SESSION['dealerHand']);
+	$_SESSION['uHandValue'] = $game->getHandValue($_SESSION['userHand']);
+	// Auto-stand if at 21
+    if ($_SESSION['userValue'] == 21)
+		header("Location: index.php?stand=stand");
+	// Not sure this is even necessary
+	$gameOver = winCheck($_SESSION['userValue'], $_SESSION['dHandValue'], 0);
 } else if (isset($_GET['stand'])) {
     while ($_SESSION['dHandValue'] < 17) {
-        $_SESSION['dealerHand'][sizeof($_SESSION['dealerHand'])] = $_SESSION['deck']->Deal();
-        $_SESSION['dHandValue'] = handValue($_SESSION['dealerHand']);
-		$_SESSION['uHandValue'] = handValue($_SESSION['userHand']);
-        $gameOver = winCheck($_SESSION['uHandValue'], $_SESSION['dHandValue'], 1);
+        $_SESSION['dealerHand'][sizeof($_SESSION['dealerHand'])] = $game->dealCard();
+        $_SESSION['dHandValue'] = $game->getHandValue($_SESSION['dealerHand']);
+		$_SESSION['uHandValue'] = $game->getHandValue($_SESSION['userHand']);		
     }
+	$gameOver = winCheck($_SESSION['uHandValue'], $_SESSION['dHandValue'], 1);
 }
 
 ?>
 
 <html>
-<head align='center'>
-    <p align='center'><b>Welcome to Ghetto Blackjack</b>
-    </p>
+<head>
+<style type="text/css">
+	body {
+		margin:0px;
+	}
+</style>
 </head>
-<p align='center'>
-    Your Hand is:<br/>
-    <?php for ($i = 0; $i < sizeof($_SESSION['userHand']); $i++) {
-        echo $_SESSION['userHand'][$i]->toString() . "<br />";
-        //echo "<br />" . $i . " " . sizeof($_SESSION['userHand']);
-        //var_dump($_SESSION['userHand']);
+<body>
+    <p align='center'><b>Welcome to Ghetto Blackjack</b></p>
+<div align='center' style="background-color:beige; padding:5px; width:300px; margin:auto;">
+    <div style="text-decoration:underline; font-weight:bold;">Your Hand is:</div><br/>
+    <?php 
+	// Show cards
+	for ($i = 0; $i < sizeof($_SESSION['userHand']); $i++) {
+        echo $game->translateCard($_SESSION['userHand'][$i]) . "<br />";
     }
 
-    echo "<br /><br />Your opponents visible cards: <br />";
-    for ($j = 1; $j < sizeof($_SESSION['dealerHand']); $j++) {
-        echo $_SESSION['dealerHand'][$j]->toString() . "<br />";
-    }
+    echo "<div style='text-decoration:underline; font-weight:bold;'><br /><br />Your opponents visible cards: </div><br />";
+	if ($gameOver == 0)
+	{
+		for ($j = 1; $j < sizeof($_SESSION['dealerHand']); $j++) {
+			echo $game->translateCard($_SESSION['dealerHand'][$j]) . "<br />";
+		}
+	}
+	else
+	{
+		for ($j = 0; $j < sizeof($_SESSION['dealerHand']); $j++) {
+			echo $game->translateCard($_SESSION['dealerHand'][$j]) . "<br />";
+		}
+	}
+	
+	echo "<br /><br />";
     /**game is not over; reload screen like normal**/
     if ($gameOver == 0){
         echo '<form style=\'text-align:center\' action=\'index.php\' method=\'get\'>
@@ -66,11 +86,12 @@ if (!isset($_GET['hit']) && !isset($_GET['stand'])) {
     } /**Victory conditions are met; print final screen**/
     else{
 
-      echo 'Your final score was:' . $_SESSION['uHandValue'] . '<br /> Your opponents final score was: '.$_SESSION['dHandValue'].'
+      echo 'Your final score was: ' . $_SESSION['uHandValue'] . '<br /> Your opponents final score was: '.$_SESSION['dHandValue'].'
             <form style=\'text-align:center\' action=\'index.php\' method=\'get\'>
             <input type=\'submit\' name=\'again\' value=\'Play Again\'/></form>';
     } ?>
-</p>
+</div>
+</body>
 </html>
 
 

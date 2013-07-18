@@ -13,7 +13,6 @@ class Game
 		// Create the deck
 		$this->createDeck();
 		// Shuffle the deck 4 times just to be good and shuffled
-		echo "Shuffling...\n";
 		for ($t = 0; $t <= 3; $t++)
 		{
 			shuffle($this->DECK);
@@ -45,19 +44,61 @@ class Game
 		return array_pop($this->DECK).",".array_pop($this->DECK);
 	}
 	
+	public function dealCard()
+	{
+		return array_pop($this->DECK);
+	}
+	
+	public function translateCard($card)
+	{
+		$face = substr($card,0,-1);
+		$suit = substr($card,-1,1);
+		switch($suit)
+		{
+			case 'C':
+				return $face." of Clubs";
+			case 'S':
+				return $face." of Spades";
+			case 'H':
+				return $face." of Hearts";
+			case 'D':
+				return $face." of Diamonds";
+		}
+	}
+	
 	public function getHandValue($cards)
 	{
-		// If cards contain an A...
-		$c = explode(',',$cards);
-		//return substr($c[1],0,-1);
-		$value = $this->getCardValue(substr($c[0],0,-1));
-		$value += $this->getCardValue(substr($c[1],0,-1));
+		$value = 0;
+		foreach ($cards as &$values)
+		{
+			$value += $this->getCardValue($values);
+		}
 		return $value;
 	}
 	
 	public function getCardValue($card)
 	{
-		//echo
+		$face = substr($card,0,-1);
+		$suit = substr($card,-1,1);
+		$num_pattern = '/[0-9]/';
+		$face_pattern = '/[JQK]/';
+		if (preg_match($num_pattern,$face))
+		{
+			// This is a number card
+			return $face;
+		}
+		else if (preg_match($face_pattern,$face))
+		{
+			// This is a regular face card value of 10
+			return 10;
+		}
+		else
+		{
+			// Ace 1 or 12
+			return 1;
+			echo "ACE.";
+		}
+		echo "Face: ".$face."<br />Suit: ".$suit."<br />";
 	}
 }
 

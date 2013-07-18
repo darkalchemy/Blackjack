@@ -28,24 +28,24 @@
     function winCheck($uValue, $dValue, $stand){
         if($uValue > 21){
             /**YOU LOSE**/
-            echo "You Lose!!!";
+            echo "<div style='background-color:red; text-align:center; color:white; font-size:26px; font-weight:bold; padding:20px;'>You Lose!!!</div>";
             return 1;
 
         }
         else if ($dValue > 21){
             /**YOU WIN**/
-            echo "You Win!!!";
+            echo "<div style='background-color:green; text-align:center; color:white; font-size:26px; font-weight:bold; padding:20px;'>You Win!!!</div>";
             return 1;
         }
         else if ($stand == 1){
             if($uValue > $dValue){
                 /**YOU WIN**/
-                echo "You Win!!!";
+                echo "<div style='background-color:green; text-align:center; color:white; font-size:26px; font-weight:bold; padding:20px;'>You Win!!!</div>";
                 return 1;
             }
             else{
                 /**YOU LOSE**/
-                echo "You Lose!!!";
+                echo "<div style='background-color:red; text-align:center; color:white; font-size:26px; font-weight:bold; padding:20px;'>You Lose!!!</div>";
                 return 1;
             }
         }
