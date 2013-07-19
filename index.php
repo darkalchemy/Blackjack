@@ -1,14 +1,9 @@
 <?php
-error_reporting(E_ALL);
-ini_set("display_errors", 1);
-require "Deck.php";
-require "Functions.php";
 require_once("class.Game.php");
 
 // Establish defaults
 $gameOver = 0;
-// Create a new deck and start a new game
-$game = new Game();
+$game = new Game();		// Create a new deck and start a new game
 
 /**clear all session variables if user plays again**/
 if (isset($_GET['again'])) {
@@ -17,10 +12,10 @@ if (isset($_GET['again'])) {
 session_start();
 if (!isset($_GET['hit']) && !isset($_GET['stand'])) {
     /**initial deal**/
-    $userHand[0] = $game->dealCard(); //$_SESSION['deck']->Deal();
-    $dealerHand[0] = $game->dealCard(); //$_SESSION['deck']->Deal();
-    $userHand[1] = $game->dealCard(); //$_SESSION['deck']->Deal();
-    $dealerHand[1] = $game->dealCard(); //$_SESSION['deck']->Deal();
+    $userHand[0] = $game->dealCard();
+    $dealerHand[0] = $game->dealCard();
+    $userHand[1] = $game->dealCard();
+    $dealerHand[1] = $game->dealCard();
     $_SESSION['userHand'] = $userHand;
     $_SESSION['dealerHand'] = $dealerHand;
 	$_SESSION['dHandValue'] = $game->getHandValue($_SESSION['dealerHand']);
@@ -32,15 +27,15 @@ if (!isset($_GET['hit']) && !isset($_GET['stand'])) {
 	// Auto-stand if at 21
     if ($_SESSION['userValue'] == 21)
 		header("Location: index.php?stand=stand");
-	// Not sure this is even necessary
-	$gameOver = winCheck($_SESSION['userValue'], $_SESSION['dHandValue'], 0);
+	// Check if, by hitting, the game has ended
+	$gameOver = $game->winCheck($_SESSION['userValue'], $_SESSION['dHandValue'], 0);
 } else if (isset($_GET['stand'])) {
     while ($_SESSION['dHandValue'] < 17) {
         $_SESSION['dealerHand'][sizeof($_SESSION['dealerHand'])] = $game->dealCard();
         $_SESSION['dHandValue'] = $game->getHandValue($_SESSION['dealerHand']);
 		$_SESSION['uHandValue'] = $game->getHandValue($_SESSION['userHand']);		
     }
-	$gameOver = winCheck($_SESSION['uHandValue'], $_SESSION['dHandValue'], 1);
+	$gameOver = $game->winCheck($_SESSION['uHandValue'], $_SESSION['dHandValue'], 1);
 }
 
 ?>
@@ -54,7 +49,7 @@ if (!isset($_GET['hit']) && !isset($_GET['stand'])) {
 </style>
 </head>
 <body>
-    <p align='center'><b>Welcome to Ghetto Blackjack</b></p>
+    <h2 style='text-align:center;'>Blackjack</h2>
 <div align='center' style="background-color:beige; padding:5px; width:300px; margin:auto;">
     <div style="text-decoration:underline; font-weight:bold;">Your Hand is:</div><br/>
     <?php 

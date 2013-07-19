@@ -100,6 +100,34 @@ class Game
 		}
 		echo "Face: ".$face."<br />Suit: ".$suit."<br />";
 	}
+	
+	/**returns 1 if game is over, 0 if no victory conditions are met**/
+    public function winCheck($uValue, $dValue, $stand){
+        if($uValue > 21){
+            /**YOU LOSE**/
+            echo "<div style='background-color:red; text-align:center; color:white; font-size:26px; font-weight:bold; padding:20px;'>You Lose!!!</div>";
+            return 1;
+
+        }
+        else if ($dValue > 21){
+            /**YOU WIN**/
+            echo "<div style='background-color:green; text-align:center; color:white; font-size:26px; font-weight:bold; padding:20px;'>You Win!!!</div>";
+            return 1;
+        }
+        else if ($stand == 1){
+            if($uValue > $dValue){
+                /**YOU WIN**/
+                echo "<div style='background-color:green; text-align:center; color:white; font-size:26px; font-weight:bold; padding:20px;'>You Win!!!</div>";
+                return 1;
+            }
+            else{
+                /**YOU LOSE**/
+                echo "<div style='background-color:red; text-align:center; color:white; font-size:26px; font-weight:bold; padding:20px;'>You Lose!!!</div>";
+                return 1;
+            }
+        }
+        return 0;
+    }
 }
 
 ?>
